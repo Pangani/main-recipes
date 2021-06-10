@@ -27,5 +27,15 @@ class RecipeEditTest < ActionDispatch::IntegrationTest
     assert_match updated_name, @recipe.name
     assert_match updated_description, @recipe.description
   end
-  
+
+  test "should get recipes show" do
+    get recipe_path(@recipe)
+    assert_template 'recipes/show'
+    assert_match @recipe.name, response.body
+    assert_match @recipe.description, response.body
+    assert_match @recipe.chefname, response.body
+    assert_select 'a[href=?]', edit_recipe_path(@recipe), text; "Edit this recipe"
+    assert_select 'a[href=?]', recipe_path(@recipe), text: "Delete this recipe"
+  end
+ 
 end
