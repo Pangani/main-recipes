@@ -1,6 +1,8 @@
 class RecipesController < ApplicationController
+    before_action :set_recipe, only: [:show, :edit, :update]
+
     def index
-        @recipes = Recipe.all
+        @recipes = Recipe.paginate(page: params[:page], per_page: 5)
     end
 
     def new
@@ -9,7 +11,7 @@ class RecipesController < ApplicationController
     
     def create
         @recipe = Recipe.new(recipe_params)
-        @recipe.chef = Chef.first
+        @recipe.chef = current_chef
         if @recipe.save
             flash[:success] = "Recipe was created successfully"
             redirect_to recipe_path(@recipe)
@@ -19,14 +21,12 @@ class RecipesController < ApplicationController
     end
     
     def show
-        @recipe = Recipe.find(params[:id])
     end
     
     def edit
-        @recipe = Recipe.find(params[:id])
     end
+
     def update
-        @recipe = Recipe.find(params[:id])
         if @recipe.update(recipe_params)
             flash[:success] = "Recipe was updated successfully!"
             redirect_to recipe_path(@recipe)
@@ -46,5 +46,10 @@ class RecipesController < ApplicationController
     def recipe_params
         params.require(:recipe).permit(:name, :description)
     end
+
+    def set_recipe
+        @recipe= Recipe.find(params[:id])
+    end
+    
     
 end
